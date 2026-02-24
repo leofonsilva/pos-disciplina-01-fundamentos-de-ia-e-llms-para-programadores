@@ -16,3 +16,6 @@
 
 ### Módulo 03: Deep Learning - Sistemas de Recomendação na prática
 - Projeto: [Como funcionam Sistemas de Recomendação](module-03)
+
+### Módulo 04 : Web Machine Learning - Como vencer qualquer jogo
+- Projeto: [Como Vencer Qualquer Jogo](module-04)
