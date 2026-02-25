@@ -21,4 +21,5 @@
 - Projeto: [Como Vencer Qualquer Jogo](module-04)
 
 ### Módulo 05: Inteligência artificial na Web
-- Projeto: [Demo 02 - Web AI Multi Modal](module-05)
+- Projeto: [Web AI Teste](module-05)
+- Projeto: [Web AI Chat Interativo](module-05-a)
