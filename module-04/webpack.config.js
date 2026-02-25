@@ -57,7 +57,7 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [        
+      patterns: [
         {
           from: path.resolve(__dirname, 'src/data/sprites.json'),
           to: 'sprites.json',
@@ -66,6 +66,11 @@ module.exports = {
         {
           from: path.resolve(__dirname, 'src/data/audio.json'),
           to: 'audio.json',
+          noErrorOnMissing: true
+        },
+        {
+          from: path.resolve(__dirname, 'src/assets/sounds/audio.ogg'),
+          to: 'audio.ogg',
           noErrorOnMissing: true
         },
         {
