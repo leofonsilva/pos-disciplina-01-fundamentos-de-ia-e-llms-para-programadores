@@ -1,0 +1,82 @@
+<!-- Elemento HTML onde a resposta será exibida -->
+<output id="output"></output>
+
+<!-- Biblioteca para converter Markdown em HTML (formatação de texto) -->
+<!-- https://www.jsdelivr.com/package/npm/markdown -->
+<script src="https://cdn.jsdelivr.net/npm/markdown@0.5.0/lib/markdown.min.js"></script>
+
+<script>
+  // Referência ao elemento HTML onde vamos mostrar a resposta
+  const output = document.getElementById('output');
+
+  // Função assíncrona auto-executável (começa imediatamente)
+  (async () => {
+    // Obtém as configurações padrão do modelo de linguagem
+    // params contém informações como temperatura padrão, topK, etc.
+    const params = await LanguageModel.params()
+    console.log("Language Model Params:", params);
+
+    // Extrai os parâmetros de configuração do modelo
+    // temperature: controla a "criatividade" (0 = mais preciso, 1 = mais criativo)
+    // topK: limita as opções de palavras possíveis (k mais prováveis)
+    const temperature = params.defaultTemperature
+    const topK = params.defaultTopK
+
+    // Configuração inicial do assistente
+    // Define o papel do sistema (como ele deve se comportar)
+    const initialPrompts = [
+      {
+        role: 'system',
+        content: `Você é um assistente de IA que responde de forma clara e objetiva.`
+      }
+    ]
+
+    // Pergunta que será feita ao modelo
+    const question = 'Quem inventou o JavaScript?'
+    
+    // Mensagem temporária enquanto a resposta não chega
+    output.innerHTML = "Gerando resposta...";
+
+    // Cria uma sessão de conversa com o modelo de linguagem
+    // Parâmetros:
+    // - expectedInputLanguages: idiomas esperados (pt = português)
+    // - temperature: controle de criatividade
+    // - topK: limite de tokens considerados
+    // - initialPrompts: configuração inicial do assistente
+    const session = await LanguageModel.create({
+      expectedInputLanguages: ["pt"],
+      temperature,
+      topK,
+      initialPrompts,
+    })
+
+    // Envia a pergunta e recebe uma stream (fluxo) de resposta
+    // promptStreaming permite receber tokens conforme são gerados
+    const responseStream = await session.promptStreaming([
+      {
+        role: 'user',
+        content: question
+      }
+    ])
+    
+    // Limpa a mensagem "Gerando resposta..."
+    output.innerHTML = ""
+    
+    // Acumula o texto completo da resposta
+    let fullText = ""
+    
+    // Itera sobre cada token recebido na stream
+    // O modelo vai enviando palavras conforme as gera
+    for await (const token of responseStream) {
+      // Acumula o novo token ao texto completo
+      fullText += token;
+      
+      // Converte o texto de Markdown para HTML e exibe
+      // Isso permite formatação como **negrito**, *itálico*, etc.
+      output.innerHTML = markdown.toHTML(fullText);
+
+      // Log para acompanhar a geração token por token
+      console.log(token)
+    }
+  })();
+</script>

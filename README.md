@@ -19,3 +19,6 @@
 
 ### Módulo 04 : Web Machine Learning - Como vencer qualquer jogo
 - Projeto: [Como Vencer Qualquer Jogo](module-04)
+
+### Módulo 05: Inteligência artificial na Web
+- Projeto: [Demo 02 - Web AI Multi Modal](module-05)
