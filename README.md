@@ -41,3 +41,9 @@
     - Copiar texto de generate-tests.md
     - Enviar
   - Verificar resultados a cada interação com a LLM
+- Projeto: [Usando IA para: Navegar em sites e extrair informações](module-08-b)
+  - Selecione a LLM ideal para a execução
+  - Sequência: 
+    - Copiar texto de prompt.md no chat
+    - Enviar
+  - Não é gerado nenhum código, apenas manipula a DOM da página para preencher dados no formulário conforme solicitado
