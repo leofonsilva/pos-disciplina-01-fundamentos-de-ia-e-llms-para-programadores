@@ -24,3 +24,20 @@
 - Projeto: [Web AI Teste](module-05)
 - Projeto: [Web AI Chat Interativo](module-05-a)
 - Projeto: [Web AI Multi Modal](module-05-b)
+
+### Módulo 06: Prompt Engineering
+- Sem projetos
+
+### Módulo 07: Ferramentas de IA para acelerar sua vida como Dev
+- Sem projetos
+
+### Módulo 08: MCPs e Automação para Devs
+- Projeto: [Usando IA para: Gerar testes automatizados](module-08)
+  - Selecione a LLM ideal para a execução
+  - Sequência: 
+    - Copiar texto de project-scaffolding.md no chat
+    - Enviar
+    - Enviar arquivo generate_test.prompt.md para o chat
+    - Copiar texto de generate-tests.md
+    - Enviar
+  - Verificar resultados a cada interação com a LLM
