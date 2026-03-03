@@ -60,4 +60,11 @@
   - Após usar uma pasta vazia para não dar contexto para a IA, forçando ela usar a ferramenta de MCP do Grafana
   - Enviar prompt que está em docs/prompt.md, pegue a parte Single Comprehensive Prompt, mais precisamente os passos de 1 a 5
   - Por fim aguardar a reposta do que está acontecendo por meio do diagnóstica feito pela IA através dos datas de telemetria
-  
+
+### Módulo 09: Modelos open-source vs. proprietários
+- Projeto: [Como rodar modelos localmente com Ollama](module-09)
+  - Instalado Ollama localmente para testar comunicação com modelos
+  - Modelos testados
+    - llama2-uncensored:7b
+    - gpt-oss:20b
+  - Testado apenas modelos pequenos devido limitações de hardware
