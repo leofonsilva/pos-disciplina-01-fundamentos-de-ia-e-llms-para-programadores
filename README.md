@@ -41,9 +41,23 @@
     - Copiar texto de generate-tests.md
     - Enviar
   - Verificar resultados a cada interação com a LLM
-- Projeto: [Usando IA para: Navegar em sites e extrair informações](module-08-b)
+- Projeto: [Usando IA para: Navegar em sites e extrair informações](module-08-a)
   - Selecione a LLM ideal para a execução
   - Sequência: 
     - Copiar texto de prompt.md no chat
     - Enviar
   - Não é gerado nenhum código, apenas manipula a DOM da página para preencher dados no formulário conforme solicitado
+- Projeto: [Usando IA para: Consultar documentações atualizadas](module-08-b)
+  - Selecione a LLM ideal para a execução, de preferência versão premium
+  - Sequência: 
+    - Copiar texto de prompt.md no chat
+    - Enviar
+  - É esperado a criação de um projeto simples de autenticação usando o GitHub
+- Projeto: [Usando IA para: Colher dados de Telemetria de apps](module-08-c)
+  - Subir infra usando docker-compose-infra.yaml
+  - Instalar dependência e subir aplicação _alumnus
+  - http://localhost:3000/ para verificar se o Grafana está executando
+  - Após usar uma pasta vazia para não dar contexto para a IA, forçando ela usar a ferramenta de MCP do Grafana
+  - Enviar prompt que está em docs/prompt.md, pegue a parte Single Comprehensive Prompt, mais precisamente os passos de 1 a 5
+  - Por fim aguardar a reposta do que está acontecendo por meio do diagnóstica feito pela IA através dos datas de telemetria
+  
