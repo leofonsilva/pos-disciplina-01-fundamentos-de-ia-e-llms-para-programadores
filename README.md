@@ -68,3 +68,9 @@
     - llama2-uncensored:7b
     - gpt-oss:20b
   - Testado apenas modelos pequenos devido limitações de hardware
+- Projeto: [Como usar OpenRouter para orquestrar vários modelos](module-09-a)
+  - Integrando com OpenRouter que é um hub de modelos de LLM e testando comunicação com eles
+  - Modelos testados
+    - arcee-ai/trinity-large-preview:free
+    - google/gemma-3-27b-it:free
+  - Testado com modelos free, porém funciona normalmente com modelos pagos
