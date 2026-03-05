@@ -85,6 +85,17 @@
 - Projeto: [Geração Local de Embeddings](module-10)
   - Utilizado um modelo de embeddings e enviado os dados para um banco orientado a grafos para processar um arquivo PDF. 
   - Em seguida, é possível fazer pesquisas sobre determinado assunto dentro desse PDF e o banco irá devolver textos relacionados a esse assunto.
-  - Tecnologias testados
+  - Tecnologias testadas
+    - LangChain (orquestrador de pipelines de IA)
     - Xenova/all-MiniLM-L6-v2 (modelo de embedding)
     - Neo4j (banco orientado a grafos)
+
+- Projeto: [Criando o primeiro RAG com JavaScript e Neo4j](module-10-a)
+  - Utilizado um modelo de embeddings e enviado os dados para um banco orientado a grafos para processar um arquivo PDF.
+  - Após, os dados filtrados são enviados para um modelo de IA para interá-la sobre o assunto determinado, ao ser perguntada sua resposta é mais humanizada mas mantém o escopo de informação do arquivo PDF inicial 
+  - Tecnologias testadas
+    - LangChain (orquestrador de pipelines de IA)
+    - Xenova/all-MiniLM-L6-v2 (modelo de embedding)
+    - Neo4j (banco orientado a grafos)
+    - Open Router (orquestrador de LLMs)
+    - arcee-ai/trinity-large-preview:free (LLM)

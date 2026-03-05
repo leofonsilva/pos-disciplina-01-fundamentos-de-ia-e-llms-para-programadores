@@ -3,7 +3,9 @@ import { CONFIG } from "./config.ts";
 import { DocumentProcessor } from "./documentProcessor.ts";
 import { type PretrainedOptions } from "@huggingface/transformers";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
-import { displayResults } from "./util.ts";
+import { ChatOpenAI } from "@langchain/openai";
+import { AI } from "./ai.ts";
+import { writeFile, mkdir } from 'node:fs/promises'
 
 let _neo4jVectorStore = null
 
@@ -11,7 +13,7 @@ let _neo4jVectorStore = null
 // Isso evita duplicação quando executamos o script várias vezes
 async function clearAll(vectorStore: Neo4jVectorStore, nodeLabel: string): Promise<void> {
   console.log("🗑️  Removendo todos os documentos existentes...");
-  
+
   // Executa uma consulta Cypher (linguagem do Neo4j) para deletar todos os nós com o rótulo especificado
   await vectorStore.query(
     `MATCH (n:\`${nodeLabel}\`) DETACH DELETE n`
@@ -22,22 +24,37 @@ async function clearAll(vectorStore: Neo4jVectorStore, nodeLabel: string): Promi
 try {
   console.log("🚀 Inicializando sistema de Embeddings com Neo4j...\n");
 
+  // ETAPA 1: PREPARAÇÃO DOS DOCUMENTOS
   // Cria um processador para carregar e dividir o PDF em pedaços menores
   const documentProcessor = new DocumentProcessor(
     CONFIG.pdf.path,           // Caminho do arquivo PDF
-    CONFIG.textSplitter,       // Configuração de como dividir o texto
+    CONFIG.textSplitter,       // Configuração de como dividir o texto (tamanho dos chunks, sobreposição)
   )
-  
+
   // Carrega o PDF e divide em chunks (pedaços) para processamento
   const documents = await documentProcessor.loadAndSplit()
-  
+
+  // ETAPA 2: CONFIGURAÇÃO DOS MODELOS DE IA
   // Configura o modelo de embeddings que vai transformar textos em vetores numéricos
   // Esses vetores representam o significado semântico do texto
   const embeddings = new HuggingFaceTransformersEmbeddings({
     model: CONFIG.embedding.modelName,                    // Nome do modelo (ex: all-MiniLM-L6-v2)
     pretrainedOptions: CONFIG.embedding.pretrainedOptions as PretrainedOptions  // Configurações do modelo
   })
-  
+
+  // Configura o modelo de linguagem (LLM) que vai gerar as respostas em linguagem natural
+  // Usamos OpenRouter que dá acesso a vários modelos como GPT, Claude, etc.
+  const nlpModel = new ChatOpenAI({
+    temperature: CONFIG.openRouter.temperature,           // Controla criatividade (0 = mais preciso, 1 = mais criativo)
+    maxRetries: CONFIG.openRouter.maxRetries,             // Número de tentativas em caso de falha
+    modelName: CONFIG.openRouter.nlpModel,                // Modelo escolhido (ex: openai/gpt-4)
+    openAIApiKey: CONFIG.openRouter.apiKey,               // Chave de API do OpenRouter
+    configuration: {
+      baseURL: CONFIG.openRouter.url,                      // URL da API do OpenRouter
+      defaultHeaders: CONFIG.openRouter.defaultHeaders     // Headers adicionais para a requisição
+    }
+  })
+
   // Código comentado que poderia testar a criação de embeddings para palavras isoladas
   // const response = await embeddings.embedQuery(
   //     "JavaScript"
@@ -47,6 +64,7 @@ try {
   // ])
   // console.log('response', response)
 
+  // ETAPA 3: CONFIGURAÇÃO DO BANCO DE VETORES
   // Conecta a um grafo Neo4j existente para usar como armazenamento de vetores
   // O Neo4j guardará tanto o texto original quanto seus vetores de embedding
   _neo4jVectorStore = await Neo4jVectorStore.fromExistingGraph(
@@ -54,9 +72,10 @@ try {
     CONFIG.neo4j
   )
 
+  // ETAPA 4: POPULAÇÃO DO BANCO DE DADOS
   // Limpa documentos antigos antes de adicionar os novos
   clearAll(_neo4jVectorStore, CONFIG.neo4j.nodeLabel)
-  
+
   // Adiciona cada chunk de documento ao Neo4j, um por um
   for (const [index, doc] of documents.entries()) {
     console.log(`✅ Adicionando documento ${index + 1}/${documents.length}`);
@@ -64,11 +83,12 @@ try {
   }
   console.log("\n✅ Base de dados populada com sucesso!\n");
 
-  // ==================== EXECUTAR BUSCA POR SIMILARIDADE ====================
-  // Agora vamos testar o sistema fazendo perguntas sobre o conteúdo do PDF
+  // ==================== ETAPA 5: SISTEMA DE PERGUNTAS E RESPOSTAS ====================
+  // Agora vamos usar o RAG (Retrieval-Augmented Generation) para responder perguntas
+  // O sistema busca trechos relevantes e usa a IA para gerar respostas coerentes
   console.log("🔍 Executando buscas por similaridade...\n");
-  
-  // Lista de perguntas para testar a busca semântica
+
+  // Lista de perguntas para testar o sistema RAG
   const questions = [
     "O que são tensores e como são representados em JavaScript?",
     "Como converter objetos JavaScript em tensores?",
@@ -78,21 +98,44 @@ try {
     "o que é hot enconding e quando usar?"
   ]
 
-  // Para cada pergunta, busca os trechos mais relevantes do documento
-  for (const question of questions) {
+  // Cria uma instância do sistema de IA que integra busca + geração de resposta
+  const ai = new AI({
+    nlpModel,                                         // Modelo de linguagem para gerar respostas
+    debugLog: console.log,                             // Função para mostrar logs no console
+    vectorStore: _neo4jVectorStore,                    // Banco de vetores com os documentos
+    promptConfig: CONFIG.promptConfig,                 // Configurações do prompt (papel, tom, formato)
+    templateText: CONFIG.templateText,                  // Template do prompt que será preenchido
+    topK: CONFIG.similarity.topK,                       // Número de documentos relevantes a buscar
+  })
+
+  // Processa cada pergunta da lista
+  for (const index in questions) {
+    const question = questions[index]
     console.log(`\n${'='.repeat(80)}`);
     console.log(`📌 PERGUNTA: ${question}`);
     console.log('='.repeat(80));
-
-    // Faz uma busca por similaridade: encontra os chunks com significado mais próximo da pergunta
-    const results = await _neo4jVectorStore.similaritySearch(
-      question,                // Texto da pergunta
-      CONFIG.similarity.topK    // Número de resultados a retornar (ex: 5 chunks mais relevantes)
-    )
     
-    // Mostra os resultados de forma organizada
-    displayResults(results)
-    // console.log(results)  // Versão sem formatação, comentada
+    // Envia a pergunta para o sistema de IA e aguarda a resposta
+    const result = await ai.answerQuestion(question!)
+    
+    // Se houve erro na busca (ex: nenhum documento relevante), mostra o erro e pula para próxima pergunta
+    if (result.error) {
+      console.log(`\n❌ Erro: ${result.error}\n`);
+      continue
+    }
+
+    // Mostra a resposta gerada no console
+    console.log(`\n${result.answer}\n`);
+    
+    // ETAPA 6: SALVAMENTO DAS RESPOSTAS EM ARQUIVO
+    // Cria a pasta de respostas se ela não existir
+    await mkdir(CONFIG.output.answersFolder, { recursive: true })
+
+    // Gera um nome único para o arquivo: nome-base + índice da pergunta + timestamp
+    const fileName = `${CONFIG.output.answersFolder}/${CONFIG.output.fileName}-${index}-${Date.now()}.md`
+
+    // Salva a resposta em um arquivo markdown para consulta posterior
+    await writeFile(fileName, result.answer!)
   }
 
   // Limpeza final
