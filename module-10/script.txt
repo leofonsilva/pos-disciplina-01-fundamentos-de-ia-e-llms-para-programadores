@@ -1,9 +1,9 @@
 template
-    - config.js
-    - util.js
-    - package.json
-    - docker-compose
-    - tensores.pdf
+  - config.js
+  - util.js
+  - package.json
+  - docker-compose
+  - tensores.pdf
 
 npm ci
 npm run infra:up
@@ -13,14 +13,14 @@ show tensores.pdf
 
 --
 documentProcessor
-    all
+  all
 
 embeddings
-    should show the vectors
+  should show the vectors
 
 VectorStoreManager
-    addDocuments
-    clearAll
+  addDocuments
+  clearAll
 
 index.ts
-    vectorStoreManager
+  vectorStoreManager

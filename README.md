@@ -22,7 +22,9 @@
 
 ### Módulo 05: Inteligência artificial na Web
 - Projeto: [Web AI Teste](module-05)
+
 - Projeto: [Web AI Chat Interativo](module-05-a)
+
 - Projeto: [Web AI Multi Modal](module-05-b)
 
 ### Módulo 06: Prompt Engineering
@@ -41,18 +43,21 @@
     - Copiar texto de generate-tests.md
     - Enviar
   - Verificar resultados a cada interação com a LLM
+
 - Projeto: [Usando IA para: Navegar em sites e extrair informações](module-08-a)
   - Selecione a LLM ideal para a execução
   - Sequência: 
     - Copiar texto de prompt.md no chat
     - Enviar
   - Não é gerado nenhum código, apenas manipula a DOM da página para preencher dados no formulário conforme solicitado
+
 - Projeto: [Usando IA para: Consultar documentações atualizadas](module-08-b)
   - Selecione a LLM ideal para a execução, de preferência versão premium
   - Sequência: 
     - Copiar texto de prompt.md no chat
     - Enviar
   - É esperado a criação de um projeto simples de autenticação usando o GitHub
+
 - Projeto: [Usando IA para: Colher dados de Telemetria de apps](module-08-c)
   - Subir infra usando docker-compose-infra.yaml
   - Instalar dependência e subir aplicação _alumnus
@@ -68,9 +73,18 @@
     - llama2-uncensored:7b
     - gpt-oss:20b
   - Testado apenas modelos pequenos devido limitações de hardware
+
 - Projeto: [Como usar OpenRouter para orquestrar vários modelos](module-09-a)
   - Integrando com OpenRouter que é um hub de modelos de LLM e testando comunicação com eles
   - Modelos testados
     - arcee-ai/trinity-large-preview:free
     - google/gemma-3-27b-it:free
   - Testado com modelos free, porém funciona normalmente com modelos pagos
+
+### Módulo 10: RAG, embeddings e busca semântica
+- Projeto: [Geração Local de Embeddings](module-10)
+  - Utilizado um modelo de embeddings e enviado os dados para um banco orientado a grafos para processar um arquivo PDF. 
+  - Em seguida, é possível fazer pesquisas sobre determinado assunto dentro desse PDF e o banco irá devolver textos relacionados a esse assunto.
+  - Tecnologias testados
+    - Xenova/all-MiniLM-L6-v2 (modelo de embedding)
+    - Neo4j (banco orientado a grafos)
